@@ -1,0 +1,103 @@
+<%- include('./header.ejs') -%>
+<body>
+    <form id="form" method="POST" enctype="multipart/form-data" action=""
+        class="form-control container bg-danger text-white p-4">
+    <h2 class="title text-center">
+    <% if (typeof prato !== 'undefined') { %>
+        Editar Prato
+    <% } else { %>
+        Cadastrar novo prato
+    <% } %>
+    </h2>
+
+    <% if(typeof error !== 'undefined') { %>
+        <div class="alert alert-<%- (error == 'Informações salvas com sucesso!') ? 'success' : 'danger' -%>">
+            <%- error -%>
+        </div>
+    <% } %>
+
+        <div class="text-center">
+            <img src="../IMG/<%- (Imagem != null) ? `Pratos/${Imagem.Nome}` : 'prato.png' -%>" id="image" class="" alt="Imagem do Prato" onclick="imagePrev()">
+            <input id="fileInput" type="file" class="" accept="image/*" name="image" onchange="imagePrev()">
+        </div>
+        
+        <label class="form-label mt-3">Nome</label>
+        <input type="text" name="nome" class="form-control mb-3"
+        value="<%- (typeof prato !== 'undefined') ? prato.Nome : null -%>" required>
+
+        <label class="form-label">Descrição</label>
+        <textarea name="descricao" class="form-control mb-3" rows="7" style="resize: none;" required><%- typeof(prato) != 'undefined' ? prato.Descricao : null -%></textarea>
+        
+        <div class="row g-2">
+            <div class="col-md">
+                <label>Tipo</label>
+                <select name="tipo" class="form-control" required>
+                <% for(let i = 0; i < tipos.length; i++) { %>
+                    <option value="<%- i -%>" <%- typeof(prato) != 'undefined' && (prato.Tipo == i) ? "selected" : null -%>>
+                    <%- tipos[i] -%>
+                    </option>
+                <% } %>
+                </select>
+            </div>
+            
+            <div class="col-md">
+                <label>Preço</label>
+                <input type="number" name="preco" min=0 step=0.01 class="form-control" 
+                value=<%- typeof(prato) != 'undefined' ? prato.Preco : 0 -%>>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <label class="h4 col-sm">Ingredientes</label>
+            <button type="button" class="btn btn-warning btn-sm pt-0 pb-0 col-auto" style="margin-right: 10px"
+            onclick="newIngredient(false)"><div class="h5">Novo</div></button>
+            <button type="button" class="btn btn-dark btn-sm pt-0 pb-0 col-auto" style="margin-right: 10px"
+            onclick="rmvIngredient()"><div class="h5">-</div></button>
+            <button type="button" class="btn btn-dark btn-sm pt-0 pb-0 col-auto" style="margin-right: 10px"
+            onclick="addIngredient()"><div class="h5">+</div></button>
+        </div>
+
+        <% if(typeof(receita) == 'undefined') {
+              receita = []
+              receita[0] = true
+           } %>
+
+        <div class="receita">
+        <% for(let i = 0; i < receita.length; i++) { %>
+            <div class="row g-3">
+                <div class="col-md mb-3">
+                    <%- i == 0 ? `<label>Nome</label>` : null -%>
+                    <select name="ingredientes[]" class="form-control">
+                    <% ingredientes.forEach(ingrediente => { %>
+                        <option value="<%- ingrediente.ID -%>"
+                        <%- typeof(prato) != 'undefined' && receita[i].ID_Ingrediente == ingrediente.ID ? "selected" : null -%>>
+                        <%- ingrediente.Nome -%>
+                        </option>
+                    <% }) %>
+                    </select>
+                </div>
+
+                <div class="col-md mb-3">
+                    <%- i == 0 ? `<label>Porção</label>` : null -%>
+                    <input type="number" class="form-control" name="porcoes[]" required
+                    value="<%- typeof(prato) != 'undefined' ? receita[i].Porcao : null -%>">
+                </div>
+
+                <div class="col-md mb-3">
+                    <%- i == 0 ? `<label>Medida</label>` : null -%>
+                    <select name="medidas[]" class="form-control" required>
+                    <% for(let c = 0; c < medidas.length; c++) { %>
+                        <option value="<%- c -%>" <%- typeof(prato) != 'undefined' && receita[i].Tipo_Porcao == c ? "selected" : null -%>>
+                        <%- medidas[c] -%>
+                        </option>
+                    <% } %>
+                    </select>
+                </div>
+            </div>   
+        <% } %>
+        </div>
+
+        <input type="submit" class="form-control border-0 text-white bg-dark mt-3" value="<%- typeof(prato) == 'undefined' ? 'Adicionar' : 'Editar' -%>">
+    </form>
+</body>
+</html>
